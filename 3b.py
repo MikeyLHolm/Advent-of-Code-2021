@@ -1,3 +1,4 @@
+from copy import deepcopy
 
 def read_input(filename):
     with open(filename) as file:
@@ -11,7 +12,6 @@ def most_common_value(lines, i):
     zero = 0
     one = 0
     for line in lines:
-        print(line)
         if line[i] == '0':
             zero += 1
         else:
@@ -20,29 +20,78 @@ def most_common_value(lines, i):
     return '0' if zero > one else '1'
 
 
-def foo(lines):
-    line_len = len(lines[0])
-    managed_list = []
-    for i in range(line_len):
-        if most_common_value(lines, i) == '1':
-            print(most_common_value(lines, i))
+def split_list(mcv, i, lines):
+    co2_scrubber_list = []
+    oxygen_generator_list = deepcopy(lines)
+    for x, line in enumerate(lines):
+        if not line[i] == mcv:
+            lst_i = oxygen_generator_list.index(line)
+            co2_scrubber_list.append(oxygen_generator_list.pop(lst_i))
+
+    return oxygen_generator_list, co2_scrubber_list
+
+
+def get_oxygen_rating(data_list, i):
+    print('get oxy rating', data_list)
+    list_len = len(data_list)
+    print(list_len)
+    if list_len == 1:
+        print(data_list, int(data_list[0], 2))
+        return int(data_list[0], 2)
+    data_cpy = deepcopy(data_list)
+    mcv = most_common_value(data_list, i)
+    for line in data_list:
+        if not line[i] == mcv:
+            lst_i = data_cpy.index(line)
+            data_cpy.pop(lst_i)
+
+    return get_oxygen_rating(data_cpy, i + 1)
+
+
+def get_co2_rating(data_list, i):
+    list_len = len(data_list)
+    print(list_len)
+    if list_len == 1:
+        print(data_list, int(data_list[0], 2))
+        return int(data_list[0], 2)
+    data_cpy = deepcopy(data_list)
+    mcv = most_common_value(data_list, i)
+    for line in data_list:
+        if line[i] == mcv:
+            lst_i = data_cpy.index(line)
+            data_cpy.pop(lst_i)
+
+    return get_co2_rating(data_cpy, i + 1)
+
+
+def get_life_support_rating(lines):
+    co2_scrubber_list = []
+    mcv = most_common_value(lines, 0)
+    oxygen_generator_list, co2_scrubber_list = split_list(mcv, 0, lines)
+    print(oxygen_generator_list)
+    print(co2_scrubber_list)
+
+    og_r = get_oxygen_rating(oxygen_generator_list, 1)
+    print(og_r)
+    co2s_r = get_co2_rating(co2_scrubber_list, 1)
+    print(co2s_r)
+
+    return og_r * co2s_r
 
 
 def main():
     test_lines = read_input('data/3_test.txt')
     assert len(test_lines) == 12
 
-    foo(test_lines)
+    life_support_rating = get_life_support_rating(test_lines)
+    print(f'life support rating with test data: [{life_support_rating}]')
+    assert life_support_rating == 230
 
     lines = read_input('data/3.txt')
     assert len(lines) == 1000
 
-    oxygen_gen_r = 0
-    co2_scrubber_r = 0
-    life_support_rating = oxygen_gen_r * co2_scrubber_r
-    # print(life_support_rating)
-
-
+    life_support_rating = get_life_support_rating(lines)
+    print(f'life support rating: [{life_support_rating}]')
 
 
 if __name__ == "__main__":
