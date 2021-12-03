@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 def read_input(filename):
     with open(filename) as file:
         lines = file.readlines()
@@ -20,10 +21,11 @@ def most_common_value(lines, i):
     return '0' if zero > one else '1'
 
 
-def split_list(mcv, i, lines):
+def split_list(lines, i):
     co2_scrubber_list = []
     oxygen_generator_list = deepcopy(lines)
-    for x, line in enumerate(lines):
+    mcv = most_common_value(lines, i)
+    for line in lines:
         if not line[i] == mcv:
             lst_i = oxygen_generator_list.index(line)
             co2_scrubber_list.append(oxygen_generator_list.pop(lst_i))
@@ -32,12 +34,10 @@ def split_list(mcv, i, lines):
 
 
 def get_oxygen_rating(data_list, i):
-    print('get oxy rating', data_list)
     list_len = len(data_list)
-    print(list_len)
     if list_len == 1:
-        print(data_list, int(data_list[0], 2))
         return int(data_list[0], 2)
+
     data_cpy = deepcopy(data_list)
     mcv = most_common_value(data_list, i)
     for line in data_list:
@@ -50,10 +50,9 @@ def get_oxygen_rating(data_list, i):
 
 def get_co2_rating(data_list, i):
     list_len = len(data_list)
-    print(list_len)
     if list_len == 1:
-        print(data_list, int(data_list[0], 2))
         return int(data_list[0], 2)
+
     data_cpy = deepcopy(data_list)
     mcv = most_common_value(data_list, i)
     for line in data_list:
@@ -66,10 +65,8 @@ def get_co2_rating(data_list, i):
 
 def get_life_support_rating(lines):
     co2_scrubber_list = []
-    mcv = most_common_value(lines, 0)
-    oxygen_generator_list, co2_scrubber_list = split_list(mcv, 0, lines)
-    print(oxygen_generator_list)
-    print(co2_scrubber_list)
+    oxygen_generator_list = []
+    oxygen_generator_list, co2_scrubber_list = split_list(lines, 0)
 
     og_r = get_oxygen_rating(oxygen_generator_list, 1)
     print(og_r)
